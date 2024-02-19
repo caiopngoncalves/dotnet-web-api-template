@@ -30,20 +30,20 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
         await Context.SaveChangesAsync();
         return entity;
     }
-    public async Task<T> Delete(T entity)
+    public async Task<T> Delete(Guid id)
     {
-        var result = await Context.Set<T>().FindAsync(entity.Id);
+        var result = await Context.Set<T>().FindAsync(id);
         if (result == null)
         {
-            throw new Exception($"Entity {nameof(T)} with id {entity.Id} not found");
+            throw new Exception($"Entity {nameof(T)} with id {id} not found");
         }
-        Context.Set<T>().Remove(entity);
+        Context.Set<T>().Remove(result);
         await Context.SaveChangesAsync();
-        return entity;
+        return result;
     }
-    public async Task<T> Get(Guid id, CancellationToken cancellationToken)
+    public async Task<T> Get(Guid id)
     {
-        var entity = await Context.Set<T>().FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        var entity = await Context.Set<T>().FirstOrDefaultAsync(x => x.Id == id);
 
         if (entity == null)
         {
@@ -51,8 +51,8 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
         }
         return entity;
     }
-    public async Task<List<T>> GetAll(CancellationToken cancellationToken)
+    public async Task<ICollection<T>> GetAll()
     {
-        return await Context.Set<T>().ToListAsync(cancellationToken);
+        return await Context.Set<T>().ToListAsync();
     }
 }
