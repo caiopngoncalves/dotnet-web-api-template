@@ -1,40 +1,49 @@
 ﻿using System;
 using System.Collections.Generic;
+using Application.Interfaces;
+using AutoMapper;
 using Domain.Common;
-using Domain.Interfaces.IServices;
 using Domain.Repositories.Interfaces;
 
-public class BaseService<T> : IBaseService<T> where T : BaseEntity
+public class BaseService<T, TInputModel, TViewModel> : IBaseService<T, TInputModel, TViewModel> where T : BaseEntity
 {
     private readonly IBaseRepository<T> _repository;
+    private readonly IMapper _mapper;
 
-    public BaseService(IBaseRepository<T> repository)
+    public BaseService(IBaseRepository<T> repository, IMapper mapper)
     {
         _repository = repository;
+        _mapper = mapper;
     }
 
-    public Task<T> Create(T obj)
+    public async Task<TViewModel> Create(TInputModel inputModel)
     {
-        return _repository.Create(obj);
+        var entity = _mapper.Map<T>(inputModel);
+        var createdEntity = await _repository.Create(entity);
+        return _mapper.Map<TViewModel>(createdEntity);
     }
 
-    public Task<T> Get(Guid id)
+    public async Task<TViewModel> Get(Guid id)
     {
-        return _repository.Get(id);
+        var entity = await _repository.Get(id);
+        return _mapper.Map<TViewModel>(entity);
     }
 
-    public Task<T> Update(T obj)
+    public async Task<TViewModel> Update(TInputModel inputModel)
     {
-        return _repository.Update(obj);
+        var entity = _mapper.Map<T>(inputModel);
+        var updatedEntity = await _repository.Update(entity);
+        return _mapper.Map<TViewModel>(updatedEntity);
     }
 
-    public Task<T> Delete(Guid id)
+    public async Task Delete(Guid id)
     {
-       return _repository.Delete(id);
+        await _repository.Delete(id);
     }
 
-    public Task<ICollection<T>> GetAll()
+    public async Task<IEnumerable<TViewModel>> GetAll()
     {
-        return _repository.GetAll();
+        var entities = await _repository.GetAll();
+        return _mapper.Map<IEnumerable<TViewModel>>(entities);
     }
 }

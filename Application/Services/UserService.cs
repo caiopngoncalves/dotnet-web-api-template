@@ -1,12 +1,16 @@
-﻿using Domain.Entities;
-using Domain.Interfaces.IServices;
+﻿using Application.InputModels;
+using Application.Interfaces;
+using Application.ViewModels;
+using AutoMapper;
+using Domain.Entities;
 using Domain.Repositories.Interfaces;
 
-namespace Application;
+namespace Application.Services;
 
-public class UserRepository : BaseService<User>, IUserService
+public class UserService : BaseService<User, UserInputModel, UserViewModel>, IUserService
 {
-    public UserRepository(IBaseRepository<User> repository) : base(repository)
+    public UserService(IUserRepository repository, IMapper mapper) : base(repository, mapper)
     {
     }
+    // Implement any additional methods defined in IUserService
 }
